@@ -9,7 +9,9 @@ import com.teya.tinyledger.ledger.domain.balance.AccountBalance;
 import com.teya.tinyledger.ledger.domain.balance.BalanceRepository;
 import com.teya.tinyledger.ledger.domain.transaction.Transaction;
 import com.teya.tinyledger.ledger.domain.transaction.TransactionHistoryRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 public class WithdrawHandler implements CommandHandler<WithdrawCommand, Transaction> {
 
     private final AccountRepository accountRepository;

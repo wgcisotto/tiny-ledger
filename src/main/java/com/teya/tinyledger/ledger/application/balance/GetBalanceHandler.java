@@ -5,7 +5,9 @@ import com.teya.tinyledger.ledger.application.query.QueryHandler;
 import com.teya.tinyledger.ledger.domain.account.AccountRepository;
 import com.teya.tinyledger.ledger.domain.balance.AccountBalance;
 import com.teya.tinyledger.ledger.domain.balance.BalanceRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GetBalanceHandler implements QueryHandler<GetBalanceQuery, AccountBalance> {
 
     private final AccountRepository accountRepository;
