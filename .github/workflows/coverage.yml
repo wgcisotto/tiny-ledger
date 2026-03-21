@@ -1,0 +1,50 @@
+name: Coverage
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run tests and generate JaCoCo report
+        run: ./mvnw --batch-mode clean test
+
+      - name: Enforce line coverage threshold
+        run: |
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          threshold = 80.0
+          tree = ET.parse("target/site/jacoco/jacoco.xml")
+          counters = tree.getroot().findall("counter")
+          line_counter = next(counter for counter in counters if counter.attrib["type"] == "LINE")
+          missed = int(line_counter.attrib["missed"])
+          covered = int(line_counter.attrib["covered"])
+          total = missed + covered
+          coverage = (covered / total) * 100 if total else 0.0
+
+          print(f"Line coverage: {coverage:.2f}%")
+          print(f"Required threshold: > {threshold:.2f}%")
+
+          if coverage <= threshold:
+              raise SystemExit(f"Coverage check failed: {coverage:.2f}% is not greater than {threshold:.2f}%")
+          PY
+
+      - name: Upload JaCoCo HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco

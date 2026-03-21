@@ -1,3 +1,6 @@
+[![CI](https://github.com/wgcisotto/tiny-ledger/actions/workflows/ci.yml/badge.svg)](https://github.com/wgcisotto/tiny-ledger/actions/workflows/ci.yml)
+[![Coverage](https://github.com/wgcisotto/tiny-ledger/actions/workflows/coverage.yml/badge.svg)](https://github.com/wgcisotto/tiny-ledger/actions/workflows/coverage.yml)
+
 # Tiny Ledger
 
 Tiny Ledger is a small in-memory ledger API. 
