@@ -1,0 +1,101 @@
+# -----------------------------
+# Deposit into ACCOUNT_1
+#
+# Available accountIds:
+# SYSTEM, ACCOUNT_1, ACCOUNT_2, ACCOUNT_3, ACCOUNT_4
+#
+# curl -X POST --location "http://localhost:8080/accounts/ACCOUNT_1/deposits" \
+#   -H "Accept: application/json" \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#         "amount": 100.00,
+#         "referenceId": "deposit-ref-1"
+#       }'
+# -----------------------------
+POST http://localhost:8080/accounts/ACCOUNT_1/deposits
+Accept: application/json
+Content-Type: application/json
+
+{
+  "amount": 100.00,
+  "referenceId": "deposit-ref-1"
+}
+
+###
+
+# -----------------------------
+# Withdraw from ACCOUNT_1
+#
+# Run the deposit request first.
+#
+# curl -X POST --location "http://localhost:8080/accounts/ACCOUNT_1/withdrawals" \
+#   -H "Accept: application/json" \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#         "amount": 40.00,
+#         "referenceId": "withdraw-ref-1"
+#       }'
+# -----------------------------
+POST http://localhost:8080/accounts/ACCOUNT_1/withdrawals
+Accept: application/json
+Content-Type: application/json
+
+{
+  "amount": 40.00,
+  "referenceId": "withdraw-ref-1"
+}
+
+###
+
+# -----------------------------
+# Get current balance
+#
+# curl -X GET --location "http://localhost:8080/accounts/ACCOUNT_1/balance" \
+#   -H "Accept: application/json"
+# -----------------------------
+GET http://localhost:8080/accounts/ACCOUNT_1/balance
+Accept: application/json
+
+###
+
+# -----------------------------
+# Get transaction history
+#
+# curl -X GET --location "http://localhost:8080/accounts/ACCOUNT_1/transactions" \
+#   -H "Accept: application/json"
+# -----------------------------
+GET http://localhost:8080/accounts/ACCOUNT_1/transactions
+Accept: application/json
+
+###
+
+# -----------------------------
+# Unknown account
+#
+# curl -X GET --location "http://localhost:8080/accounts/UNKNOWN/balance" \
+#   -H "Accept: application/json"
+# -----------------------------
+GET http://localhost:8080/accounts/UNKNOWN/balance
+Accept: application/json
+
+###
+
+# -----------------------------
+# Insufficient funds
+#
+# curl -X POST --location "http://localhost:8080/accounts/ACCOUNT_2/withdrawals" \
+#   -H "Accept: application/json" \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#         "amount": 1.00,
+#         "referenceId": "insufficient-funds-1"
+#       }'
+# -----------------------------
+POST http://localhost:8080/accounts/ACCOUNT_2/withdrawals
+Accept: application/json
+Content-Type: application/json
+
+{
+  "amount": 1.00,
+  "referenceId": "insufficient-funds-1"
+}
