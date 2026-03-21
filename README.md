@@ -20,6 +20,18 @@ The goal is clarity over completeness: a clean architecture, explicit business r
 ./mvnw test
 ```
 
+## Coverage
+
+Generate the test coverage report with:
+
+```bash
+./mvnw clean test
+```
+
+Open the HTML report at:
+
+`target/site/jacoco/index.html`
+
 ## API
 
 Implemented endpoints:
