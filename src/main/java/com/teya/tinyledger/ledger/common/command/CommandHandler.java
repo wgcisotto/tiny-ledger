@@ -1,4 +1,4 @@
-package com.teya.tinyledger.ledger.application.command;
+package com.teya.tinyledger.ledger.common.command;
 
 public interface CommandHandler<C, R> {
 

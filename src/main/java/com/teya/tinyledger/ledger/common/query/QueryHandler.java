@@ -1,4 +1,4 @@
-package com.teya.tinyledger.ledger.application.query;
+package com.teya.tinyledger.ledger.common.query;
 
 public interface QueryHandler<Q, R> {
 

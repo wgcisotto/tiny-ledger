@@ -1,4 +1,4 @@
-package com.teya.tinyledger.ledger.application.exception;
+package com.teya.tinyledger.ledger.common.exception;
 
 public class InsufficientFundsException extends RuntimeException {
 

@@ -1,7 +1,7 @@
 package com.teya.tinyledger.ledger.application.transaction;
 
-import com.teya.tinyledger.ledger.application.exception.AccountNotFoundException;
-import com.teya.tinyledger.ledger.application.query.QueryHandler;
+import com.teya.tinyledger.ledger.common.exception.AccountNotFoundException;
+import com.teya.tinyledger.ledger.common.query.QueryHandler;
 import com.teya.tinyledger.ledger.domain.account.AccountRepository;
 import com.teya.tinyledger.ledger.domain.transaction.AccountTransactionHistory;
 import com.teya.tinyledger.ledger.domain.transaction.TransactionHistoryRepository;

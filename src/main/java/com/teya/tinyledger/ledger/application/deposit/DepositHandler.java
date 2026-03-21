@@ -1,8 +1,8 @@
 package com.teya.tinyledger.ledger.application.deposit;
 
-import com.teya.tinyledger.ledger.application.command.CommandHandler;
-import com.teya.tinyledger.ledger.application.exception.AccountNotFoundException;
-import com.teya.tinyledger.ledger.application.support.AccountOperationGuard;
+import com.teya.tinyledger.ledger.common.command.CommandHandler;
+import com.teya.tinyledger.ledger.common.exception.AccountNotFoundException;
+import com.teya.tinyledger.ledger.common.support.AccountOperationGuard;
 import com.teya.tinyledger.ledger.domain.account.AccountRepository;
 import com.teya.tinyledger.ledger.domain.balance.AccountBalance;
 import com.teya.tinyledger.ledger.domain.balance.BalanceRepository;

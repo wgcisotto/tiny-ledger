@@ -3,14 +3,14 @@ package com.teya.tinyledger.ledger.application.deposit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.teya.tinyledger.ledger.application.exception.AccountNotFoundException;
+import com.teya.tinyledger.ledger.common.exception.AccountNotFoundException;
 import com.teya.tinyledger.ledger.domain.account.AccountId;
 import com.teya.tinyledger.ledger.domain.account.AccountRepository;
 import com.teya.tinyledger.ledger.domain.amount.Amount;
 import com.teya.tinyledger.ledger.domain.balance.BalanceRepository;
 import com.teya.tinyledger.ledger.domain.transaction.TransactionHistoryRepository;
 import com.teya.tinyledger.ledger.domain.transaction.TransactionType;
-import com.teya.tinyledger.ledger.infrastructure.concurrency.InMemoryAccountOperationGuard;
+import com.teya.tinyledger.ledger.infrastructure.support.InMemoryAccountOperationGuard;
 import com.teya.tinyledger.ledger.infrastructure.repository.InMemoryAccountRepository;
 import com.teya.tinyledger.ledger.infrastructure.repository.InMemoryBalanceRepository;
 import com.teya.tinyledger.ledger.infrastructure.repository.InMemoryTransactionHistoryRepository;

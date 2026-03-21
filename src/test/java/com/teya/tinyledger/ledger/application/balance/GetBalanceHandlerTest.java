@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.teya.tinyledger.ledger.application.deposit.DepositCommand;
 import com.teya.tinyledger.ledger.application.deposit.DepositHandler;
-import com.teya.tinyledger.ledger.application.exception.AccountNotFoundException;
-import com.teya.tinyledger.ledger.infrastructure.concurrency.InMemoryAccountOperationGuard;
+import com.teya.tinyledger.ledger.common.exception.AccountNotFoundException;
+import com.teya.tinyledger.ledger.infrastructure.support.InMemoryAccountOperationGuard;
 import com.teya.tinyledger.ledger.infrastructure.repository.InMemoryAccountRepository;
 import com.teya.tinyledger.ledger.infrastructure.repository.InMemoryBalanceRepository;
 import com.teya.tinyledger.ledger.infrastructure.repository.InMemoryTransactionHistoryRepository;

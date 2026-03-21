@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import com.teya.tinyledger.ledger.infrastructure.support.InMemoryAccountOperationGuard;
 import org.junit.jupiter.api.Test;
 
 class InMemoryAccountOperationGuardTest {

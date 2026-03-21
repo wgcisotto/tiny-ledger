@@ -1,6 +1,6 @@
-package com.teya.tinyledger.ledger.infrastructure.concurrency;
+package com.teya.tinyledger.ledger.infrastructure.support;
 
-import com.teya.tinyledger.ledger.application.support.AccountOperationGuard;
+import com.teya.tinyledger.ledger.common.support.AccountOperationGuard;
 import com.teya.tinyledger.ledger.domain.account.AccountId;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

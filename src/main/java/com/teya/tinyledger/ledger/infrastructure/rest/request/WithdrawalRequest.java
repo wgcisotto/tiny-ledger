@@ -1,6 +1,6 @@
 package com.teya.tinyledger.ledger.infrastructure.rest.request;
 
-import com.teya.tinyledger.ledger.application.exception.InvalidAmountException;
+import com.teya.tinyledger.ledger.common.exception.InvalidAmountException;
 import com.teya.tinyledger.ledger.application.withdrawal.WithdrawCommand;
 import com.teya.tinyledger.ledger.domain.account.AccountId;
 import com.teya.tinyledger.ledger.domain.amount.Amount;

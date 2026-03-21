@@ -1,8 +1,8 @@
 package com.teya.tinyledger.ledger.infrastructure.rest;
 
-import com.teya.tinyledger.ledger.application.exception.AccountNotFoundException;
-import com.teya.tinyledger.ledger.application.exception.InsufficientFundsException;
-import com.teya.tinyledger.ledger.application.exception.InvalidAmountException;
+import com.teya.tinyledger.ledger.common.exception.AccountNotFoundException;
+import com.teya.tinyledger.ledger.common.exception.InsufficientFundsException;
+import com.teya.tinyledger.ledger.common.exception.InvalidAmountException;
 import com.teya.tinyledger.ledger.infrastructure.rest.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
