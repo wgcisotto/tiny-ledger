@@ -3,48 +3,88 @@
 
 # Tiny Ledger
 
-Tiny Ledger is a small in-memory ledger API. 
-The goal is clarity over completeness: a clean architecture, explicit business rules, and a simple REST API for deposits, withdrawals, balances, and transaction history.
+Tiny Ledger is a small Spring Boot REST API for deposits, withdrawals, balances, and transaction history over a predefined set of accounts.
 
-## Requirements
+Everything runs in memory and in a single application instance. The goal of the project is to keep the solution simple, but still show a clean architecture and clear business rules.
 
-- Java 21
-- Maven Wrapper included in the repository
+## Table of Contents
 
-## Run
+1. [High-level design](#high-level-design)
+2. [Key decisions](#key-decisions)
+3. [API](#api)
+4. [How to run](#how-to-run)
+5. [Happy path](#happy-path)
+6. [Testing and coverage](#testing-and-coverage)
+7. [Scope](#scope)
 
-```bash
-./mvnw spring-boot:run
-```
+## High-level design
 
-## Test
+The project is split into three layers:
 
-```bash
-./mvnw test
-```
+- **Domain**: business entities, value objects, repository contracts, and business rules
+- **Application**: command/query handlers that orchestrate ledger operations
+- **Infrastructure**: REST controllers, in-memory adapters, bootstrap configuration, and supporting runtime components
 
-## Coverage
+### Domain
 
-Generate the test coverage report with:
+The domain contains the core ledger concepts:
 
-```bash
-./mvnw clean test
-```
+- `AccountId`
+- `Amount`
+- `Transaction`
+- `TransactionType`
+- `AccountBalance`
+- `AccountTransactionHistory`
 
-Open the HTML report at:
+Main rules enforced by the domain and application flow:
 
-`target/site/jacoco/index.html`
+- an account must exist
+- an amount must be greater than zero
+- a withdrawal cannot make the balance negative
+- accepted transactions are immutable
 
-## API
+### Application
 
-Implemented endpoints:
+The application layer separates writes from reads:
 
-- `POST /accounts/{accountId}/deposits`
-- `POST /accounts/{accountId}/withdrawals`
-- `GET /accounts/{accountId}/balance`
-- `GET /accounts/{accountId}/transactions`
+- Commands:
+  - `DepositHandler`
+  - `WithdrawHandler`
+- Queries:
+  - `GetBalanceHandler`
+  - `GetTransactionsHandler`
 
-## Available Accounts
+This keeps responsibilities clear and makes the flow easier to follow.
+
+This is not a full CQRS implementation. There are no separate read and write databases, no separate services, and no asynchronous projections. The project only uses the simpler idea of separating commands from queries inside the application layer.
+
+### Infrastructure
+
+This is the layer that exposes the API and provides the in-memory implementations used by the application:
+
+- Spring Boot REST API
+- in-memory repository implementations
+- predefined account bootstrap
+- in-memory account operation guard
+
+## Key decisions
+
+### Balance projection plus transaction history
+
+The ledger keeps:
+
+- transaction history for auditability
+- a separate current balance projection for fast reads
+
+This means the transaction history is still available, but `GET /accounts/{accountId}/balance` does not need to walk the full list every time. The current balance is already stored in memory, so that lookup stays O(1).
+
+### Per-account write protection
+
+If two requests try to update the same account at the same time, the application handles them one after the other.
+
+This avoids ending up with the wrong balance or missing history entries. It is only a simple in-memory protection inside one running application, not something shared across multiple instances or backed by a database transaction.
+
+### Predefined accounts
 
 The application starts with five predefined accounts:
 
@@ -54,193 +94,111 @@ The application starts with five predefined accounts:
 - `ACCOUNT_3`
 - `ACCOUNT_4`
 
-`SYSTEM` represents the internal system account used to describe funding semantics in the ledger model.
+`SYSTEM` is the internal system account used in the ledger model.
 
-## Manual Scenarios
+## API
 
-Runnable HTTP examples live in [http/accounts.http](/Users/williamcisotto/workspace/tiny-ledger/ledger/http/accounts.http).
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/accounts/{accountId}/deposits` | Add funds to an account |
+| `POST` | `/accounts/{accountId}/withdrawals` | Remove funds from an account if balance is sufficient |
+| `GET` | `/accounts/{accountId}/balance` | Return the current account balance |
+| `GET` | `/accounts/{accountId}/transactions` | Return the account transaction history |
 
-The file includes:
+## How to run
 
-- deposit into an account
-- withdraw from a funded account
-- get current balance
-- get transaction history
-- unknown account
-- insufficient funds
+### Requirements
 
-## Architecture
+- Java 21
+- Maven Wrapper included in the repository
 
-The implementation follows a clear layered architecture:
+### Start the application
 
-- Domain layer: core entities, value objects, repository contracts, and business rules
-- Application layer: command/query handlers and supporting coordination contracts
-- Infrastructure layer: REST controllers, in-memory adapters, bootstrap configuration, and concurrency adapters
+```bash
+./mvnw spring-boot:run
+```
 
-### Domain Layer
+The API will be available at `http://localhost:8080`.
 
-The domain contains the business concepts:
+## Happy path
 
-- `AccountId`
-- `Amount`
-- `Transaction`
-- `TransactionType`
-- `AccountBalance`
-- `AccountTransactionHistory`
+The quickest way to try the API is:
 
-Core business rules:
+1. Deposit into `ACCOUNT_1`
+2. Withdraw part of the balance
+3. Read the current balance
+4. Read the transaction history
 
-- account must exist
-- amount must be greater than zero
-- withdrawals cannot make the balance negative
-- transactions are immutable once accepted
+### Deposit
 
-### Application Layer
+```bash
+curl -X POST http://localhost:8080/accounts/ACCOUNT_1/deposits \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 100.00,
+    "referenceId": "deposit-ref-1"
+  }'
+```
 
-The application layer orchestrates the use cases:
+### Withdraw
 
-- deposit
-- withdrawal
-- get balance
-- get transactions
+```bash
+curl -X POST http://localhost:8080/accounts/ACCOUNT_1/withdrawals \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 40.00,
+    "referenceId": "withdraw-ref-1"
+  }'
+```
 
-It also contains supporting technical contracts needed by the use cases, such as the per-account operation guard.
+### Get balance
 
-### Infrastructure Layer
+```bash
+curl http://localhost:8080/accounts/ACCOUNT_1/balance
+```
 
-The infrastructure layer adapts the application to the outside world:
+### Get transactions
 
-- Spring Boot REST API
-- in-memory repository implementations
-- predefined account bootstrap
-- per-account locking implementation
+```bash
+curl http://localhost:8080/accounts/ACCOUNT_1/transactions
+```
 
-## Design Patterns
+There are more runnable examples in [accounts.http](http/accounts.http).
 
-The project intentionally uses a small set of patterns.
+## Testing and coverage
 
-### Repository
+Run the test suite:
 
-Where:
+```bash
+./mvnw test
+```
 
-- `AccountRepository`
-- `BalanceRepository`
-- `TransactionHistoryRepository`
+Generate the JaCoCo coverage report:
 
-Why:
+```bash
+./mvnw clean test
+```
 
-- keeps storage access behind small contracts
-- allows the application flow to ignore in-memory storage details
+Open the HTML report at:
 
-### Value Object
+`target/site/jacoco/index.html`
 
-Where:
+GitHub Actions also runs CI and checks that coverage stays above `80%`.
 
-- `AccountId`
-- `Amount`
-
-Why:
-
-- centralizes validation and invariants
-- avoids spreading raw strings and `BigDecimal` handling through the codebase
-
-### Ports and Adapters
-
-Where:
-
-- application code depends on interfaces
-- infrastructure provides Spring and in-memory implementations
-
-Why:
-
-- keeps the core model isolated from delivery and storage concerns
-- makes the architecture easier to explain and evolve
-
-### Command / Query Separation
-
-Where:
-
-- write side: deposit and withdrawal
-- read side: balance and transaction history
-
-Why:
-
-- keeps responsibilities explicit
-- simplifies reasoning about state changes versus reads
-
-### Factory Method
-
-Where:
-
-- `Transaction.deposit(...)`
-- `Transaction.withdrawal(...)`
-
-Why:
-
-- makes transaction creation explicit
-- prevents ambiguous or partially initialized transaction construction
-
-## Balance Strategy
-
-The ledger keeps two in-memory data structures per account:
-
-- transaction history for auditability
-- current balance projection for fast reads
-
-Current balance is intentionally stored separately instead of being recalculated from the full transaction list on every request.
-
-Why:
-
-- `GET /accounts/{accountId}/balance` stays O(1)
-
-Trade-off:
-
-- transaction history and balance projection must be updated together
-- this is handled with per-account write serialization inside a single application instance
-
-## Concurrency and Scope
-
-This project is intentionally single-node and in-memory.
-
-What it does:
-
-- uses a per-account in-memory lock to serialize concurrent writes for the same account
-
-What it does not try to provide:
-
-- database transactions
-- distributed atomicity
-- multi-instance consistency
-- persistence across restarts
-
-## Scenarios Covered
-
-These are the scenarios currently documented for manual verification:
-
-- deposit into an empty account
-- multiple deposits into the same account
-- withdraw from a funded account
-- withdraw exact available balance
-- withdraw with insufficient funds
-- read balance after a sequence of operations
-- read transactions after a sequence of operations
-- access an unknown account
-- duplicate `referenceId` retry if that enhancement is added later
-
-## Current Scope
+## Scope
 
 Included:
 
-- in-memory storage
+- in-memory ledger state
 - predefined accounts
 - clear layered architecture
 - REST API
-- unit and integration-style tests for the main behaviors
+- automated tests and coverage reporting
 
-Explicitly out of scope:
+Out of scope:
 
 - authentication and authorization
-- logging and monitoring
-- persistence
-- distributed transactions
-- production-grade fault tolerance
+- persistence across restarts
+- distributed consistency
+- multi-instance coordination
+- production-grade observability
